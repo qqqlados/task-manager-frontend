@@ -18,7 +18,7 @@ export async function http<
 >(url: string, options: HttpOptions = {}): Promise<T> {
 	// const token = await getCookies("accessToken");
 	const token =
-		"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsImVtYWlsIjoibHVjYXMubWFydGluQGV4YW1wbGUuY29tIiwiaWF0IjoxNzU3MTQyMTM0LCJleHAiOjE3NTcxNDU3MzR9.B_HmY40tNm0UO2pjVbXjYoBCDfeVOXbRVYOR35_csNw";
+		"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsImVtYWlsIjoibHVjYXMubWFydGluQGV4YW1wbGUuY29tIiwiaWF0IjoxNzU3MTQ2NDA0LCJleHAiOjE3NTcxNTAwMDR9.1YZfQ3jQlI0aB7EklPhdEkZKqb8VL4JriuvCQrXlfEU";
 
 	try {
 		const res = await fetch(`http://localhost:4300${url}`, {

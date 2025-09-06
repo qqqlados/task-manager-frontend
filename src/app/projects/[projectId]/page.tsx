@@ -17,7 +17,8 @@ export default async function ProjectDetailsPage({ params }: Props) {
 
 	const totalTasks = tasks.length;
 	const doneTasks = tasks.filter(t => t.status === "DONE").length;
-	const progress = totalTasks > 0 ? Math.round((doneTasks / totalTasks) * 100) : 0;
+	const progress =
+		totalTasks > 0 ? Math.round((doneTasks / totalTasks) * 100) : 0;
 
 	return (
 		<div className='space-y-6'>
@@ -45,7 +46,9 @@ export default async function ProjectDetailsPage({ params }: Props) {
 						<h2 className='card-title'>Meta</h2>
 						<p>
 							<b>Deadline:</b>{" "}
-							{project.deadline ? new Date(project.deadline).toLocaleDateString() : "—"}
+							{project.deadline
+								? new Date(project.deadline).toLocaleDateString()
+								: "—"}
 						</p>
 						<p>
 							<b>Status:</b>{" "}
@@ -76,7 +79,15 @@ export default async function ProjectDetailsPage({ params }: Props) {
 
 			<div className='card bg-base-100 shadow border border-base-200'>
 				<div className='card-body'>
-					<h2 className='card-title'>Tasks</h2>
+					<div className='flex items-center justify-between'>
+						<h2 className='card-title'>Tasks</h2>
+						<a
+							className='btn btn-primary btn-sm'
+							href={`/projects/${projectId}/tasks`}
+						>
+							View all tasks
+						</a>
+					</div>
 					<div className='overflow-x-auto'>
 						<table className='table'>
 							<thead>
@@ -101,7 +112,11 @@ export default async function ProjectDetailsPage({ params }: Props) {
 											</a>
 										</td>
 										<td>{task.assignee?.name ?? "Unassigned"}</td>
-										<td>{task.deadline ? new Date(task.deadline).toLocaleDateString() : "No deadline"}</td>
+										<td>
+											{task.deadline
+												? new Date(task.deadline).toLocaleDateString()
+												: "No deadline"}
+										</td>
 										<td>
 											<span className='badge badge-outline'>
 												{formatSnakeCase(task.status)}
@@ -112,16 +127,14 @@ export default async function ProjectDetailsPage({ params }: Props) {
 												{formatSnakeCase(task.priority)}
 											</span>
 										</td>
-										<td>
-											<a className='btn btn-ghost btn-sm' href={`/projects/${projectId}/tasks/${task.id}`}>
-												Open
-											</a>
-										</td>
 									</tr>
 								))}
 								{tasks.length === 0 && (
 									<tr>
-										<td colSpan={6} className='text-center text-base-content/60'>
+										<td
+											colSpan={6}
+											className='text-center text-base-content/60'
+										>
 											No tasks found
 										</td>
 									</tr>
@@ -134,4 +147,3 @@ export default async function ProjectDetailsPage({ params }: Props) {
 		</div>
 	);
 }
-

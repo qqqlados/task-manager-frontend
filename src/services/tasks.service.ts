@@ -72,6 +72,24 @@ export class TasksService {
 		});
 	}
 
+	static async changeStatus({
+		projectId,
+		taskId,
+		newStatus,
+	}: {
+		projectId: string;
+		taskId: string;
+		newStatus: TaskStatus;
+	}) {
+		return http<ApiResponse<{ message: string }>>(
+			`/projects/${projectId}/tasks/${taskId}/change-status`,
+			{
+				method: "PATCH",
+				body: { newStatus },
+			}
+		);
+	}
+
 	static async assignTask(
 		projectId: Pick<IProject, "id">,
 		taskId: Pick<ITask, "id">,
@@ -83,4 +101,3 @@ export class TasksService {
 		);
 	}
 }
-

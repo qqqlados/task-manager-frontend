@@ -47,7 +47,7 @@ export function KanbanBoard({ projectId, initialTasks }: KanbanBoardProps) {
 
 	const handleDragStart = (event: DragStartEvent) => {
 		const { active } = event;
-		const task = tasks.find((t) => t.id === active.id);
+		const task = tasks.find(t => t.id === active.id);
 		setActiveTask(task || null);
 	};
 
@@ -59,24 +59,27 @@ export function KanbanBoard({ projectId, initialTasks }: KanbanBoardProps) {
 
 		const taskId = active.id as number;
 		const newStatus = over.id as TaskStatus;
-		const task = tasks.find((t) => t.id === taskId);
+		console.log("newStatus", newStatus);
+		const task = tasks.find(t => t.id === taskId);
 
 		if (!task || task.status === newStatus) return;
 
 		// Optimistic update
-		setTasks((prevTasks) =>
-			prevTasks.map((t) =>
-				t.id === taskId ? { ...t, status: newStatus } : t
-			)
+		setTasks(prevTasks =>
+			prevTasks.map(t => (t.id === taskId ? { ...t, status: newStatus } : t))
 		);
 
 		try {
-			await TasksService.changeStatus(projectId, taskId.toString(), newStatus);
+			await TasksService.changeStatus({
+				projectId,
+				taskId: taskId.toString(),
+				newStatus,
+			});
 			toast.success("Task status updated");
 		} catch (error) {
 			// Revert on error
-			setTasks((prevTasks) =>
-				prevTasks.map((t) =>
+			setTasks(prevTasks =>
+				prevTasks.map(t =>
 					t.id === taskId ? { ...t, status: task.status } : t
 				)
 			);
@@ -85,7 +88,7 @@ export function KanbanBoard({ projectId, initialTasks }: KanbanBoardProps) {
 	};
 
 	const getTasksByStatus = (status: TaskStatus) => {
-		return tasks.filter((task) => task.status === status);
+		return tasks.filter(task => task.status === status);
 	};
 
 	return (
@@ -94,22 +97,22 @@ export function KanbanBoard({ projectId, initialTasks }: KanbanBoardProps) {
 			onDragStart={handleDragStart}
 			onDragEnd={handleDragEnd}
 		>
-			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-				{statusColumns.map((column) => {
+			<div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6'>
+				{statusColumns.map(column => {
 					const columnTasks = getTasksByStatus(column.id);
 					return (
-						<div key={column.id} className="space-y-4">
+						<div key={column.id} className='space-y-4'>
 							<div className={`p-3 rounded-lg ${column.color}`}>
-								<h3 className="font-semibold text-center">
+								<h3 className='font-semibold text-center'>
 									{column.title} ({columnTasks.length})
 								</h3>
 							</div>
 							<SortableContext
-								items={columnTasks.map((task) => task.id)}
+								items={columnTasks.map(task => task.id)}
 								strategy={verticalListSortingStrategy}
 							>
-								<div className="space-y-3 min-h-[400px]">
-									{columnTasks.map((task) => (
+								<div className='space-y-3 min-h-[400px]'>
+									{columnTasks.map(task => (
 										<TaskCard key={task.id} task={task} />
 									))}
 								</div>
