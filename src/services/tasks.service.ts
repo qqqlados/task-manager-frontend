@@ -82,5 +82,16 @@ export class TasksService {
 			{ method: "PUT", body: { assigneeId } }
 		);
 	}
+
+	static async changeStatus(
+		projectId: number | string,
+		taskId: number | string,
+		status: TaskStatus
+	) {
+		return http<ApiResponse<ITask>>(`/projects/${projectId}/tasks/${taskId}`, {
+			method: "PUT",
+			body: { status },
+		});
+	}
 }
 

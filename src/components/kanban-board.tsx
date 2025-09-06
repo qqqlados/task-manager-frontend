@@ -37,6 +37,10 @@ export function KanbanBoard({ projectId, initialTasks }: KanbanBoardProps) {
 	const [activeTask, setActiveTask] = useState<ITask | null>(null);
 	const [loading, setLoading] = useState(false);
 
+	useEffect(() => {
+		setTasks(initialTasks);
+	}, [initialTasks]);
+
 	const sensors = useSensors(
 		useSensor(PointerSensor, {
 			activationConstraint: {
@@ -47,7 +51,7 @@ export function KanbanBoard({ projectId, initialTasks }: KanbanBoardProps) {
 
 	const handleDragStart = (event: DragStartEvent) => {
 		const { active } = event;
-		const task = tasks.find((t) => t.id === active.id);
+		const task = tasks.find((t: ITask) => t.id === (active.id as number));
 		setActiveTask(task || null);
 	};
 
@@ -64,8 +68,8 @@ export function KanbanBoard({ projectId, initialTasks }: KanbanBoardProps) {
 		if (!task || task.status === newStatus) return;
 
 		// Optimistic update
-		setTasks((prevTasks) =>
-			prevTasks.map((t) =>
+		setTasks((prevTasks: ITask[]) =>
+			prevTasks.map((t: ITask) =>
 				t.id === taskId ? { ...t, status: newStatus } : t
 			)
 		);
@@ -75,8 +79,8 @@ export function KanbanBoard({ projectId, initialTasks }: KanbanBoardProps) {
 			toast.success("Task status updated");
 		} catch (error) {
 			// Revert on error
-			setTasks((prevTasks) =>
-				prevTasks.map((t) =>
+			setTasks((prevTasks: ITask[]) =>
+				prevTasks.map((t: ITask) =>
 					t.id === taskId ? { ...t, status: task.status } : t
 				)
 			);

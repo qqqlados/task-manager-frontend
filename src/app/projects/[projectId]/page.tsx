@@ -76,7 +76,12 @@ export default async function ProjectDetailsPage({ params }: Props) {
 
 			<div className='card bg-base-100 shadow border border-base-200'>
 				<div className='card-body'>
-					<h2 className='card-title'>Tasks</h2>
+					<div className='flex items-center justify-between'>
+						<h2 className='card-title'>Tasks</h2>
+						<a className='btn btn-primary btn-sm' href={`/projects/${projectId}/tasks`}>
+							View all tasks
+						</a>
+					</div>
 					<div className='overflow-x-auto'>
 						<table className='table'>
 							<thead>
@@ -112,11 +117,7 @@ export default async function ProjectDetailsPage({ params }: Props) {
 												{formatSnakeCase(task.priority)}
 											</span>
 										</td>
-										<td>
-											<a className='btn btn-ghost btn-sm' href={`/projects/${projectId}/tasks/${task.id}`}>
-												Open
-											</a>
-										</td>
+										<td></td>
 									</tr>
 								))}
 								{tasks.length === 0 && (
