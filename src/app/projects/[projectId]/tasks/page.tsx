@@ -115,11 +115,19 @@ export default function ProjectTasksPage({ params }: Props) {
 
 	const prioritiesArr = Array.from(new Set(tasks.map(task => task.priority)));
 
-	const filter = tasks.filter(task =>
-		prioritiesArr.some(pr => pr === task.priority)
+	const shouldFilterAssigneesByRenderedTasks = Boolean(
+		searchParams.get("status") || searchParams.get("priority")
 	);
 
-	const assigneesArr = Array.from(new Set(assignees.map(asgn => asgn.name)));
+	const renderedAssigneeIdsSet = new Set(
+		tasks
+			.map(t => (t.assignedTo ?? t.assignee?.id) as number | undefined)
+			.filter((id): id is number => typeof id === "number")
+	);
+
+	const assigneesForSelect = shouldFilterAssigneesByRenderedTasks
+		? assignees.filter(a => renderedAssigneeIdsSet.has(a.id))
+		: assignees;
 
 	return (
 		<div className='space-y-6'>
@@ -170,7 +178,7 @@ export default function ProjectTasksPage({ params }: Props) {
 					}
 				>
 					<option value=''>All Assignees</option>
-					{assignees.map((a: { id: number; name: string }) => (
+					{assigneesForSelect.map((a: { id: number; name: string }) => (
 						<option key={a.id} value={a.id.toString()}>
 							{a.name}
 						</option>
