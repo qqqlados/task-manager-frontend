@@ -26,12 +26,16 @@ export default function ProjectTasksPage({ params }: Props) {
 		});
 	}, [params]);
 
-	const fetchTasks = async (projectId: string) => {
+	const fetchTasks = async (
+		projectId: string,
+		currentFilters: { status: string; priority: string; assigneeId: string | undefined } = filters
+	) => {
 		try {
+			setLoading(true);
 			const query = {
-				status: filters.status ? (filters.status as TaskStatus) : undefined,
-				priority: filters.priority ? (filters.priority as TaskPriority) : undefined,
-				assigneeId: filters.assigneeId ? Number(filters.assigneeId) : undefined,
+				status: currentFilters.status ? (currentFilters.status as TaskStatus) : undefined,
+				priority: currentFilters.priority ? (currentFilters.priority as TaskPriority) : undefined,
+				assigneeId: currentFilters.assigneeId ? Number(currentFilters.assigneeId) : undefined,
 			};
 			const response = await TasksService.getProjectTasks(Number(projectId), query);
 			setTasks(response.data);
@@ -45,7 +49,7 @@ export default function ProjectTasksPage({ params }: Props) {
 	const handleFilterChange = (key: "status" | "priority" | "assigneeId", value: string) => {
 		const newFilters = { ...filters, [key]: value };
 		setFilters(newFilters);
-		fetchTasks(projectId);
+		fetchTasks(projectId, newFilters);
 	};
 
 	if (loading) {
