@@ -30,10 +30,15 @@ export default function ProjectTasksPage({ params }: Props) {
 		try {
 			const query = {
 				status: filters.status ? (filters.status as TaskStatus) : undefined,
-				priority: filters.priority ? (filters.priority as TaskPriority) : undefined,
+				priority: filters.priority
+					? (filters.priority as TaskPriority)
+					: undefined,
 				assigneeId: filters.assigneeId ? Number(filters.assigneeId) : undefined,
 			};
-			const response = await TasksService.getProjectTasks(Number(projectId), query);
+			const response = await TasksService.getProjectTasks(
+				Number(projectId),
+				query
+			);
 			setTasks(response.data);
 		} catch (error) {
 			toast.error("Failed to fetch tasks");
@@ -42,7 +47,10 @@ export default function ProjectTasksPage({ params }: Props) {
 		}
 	};
 
-	const handleFilterChange = (key: "status" | "priority" | "assigneeId", value: string) => {
+	const handleFilterChange = (
+		key: "status" | "priority" | "assigneeId",
+		value: string
+	) => {
 		const newFilters = { ...filters, [key]: value };
 		setFilters(newFilters);
 		fetchTasks(projectId);
@@ -74,7 +82,9 @@ export default function ProjectTasksPage({ params }: Props) {
 				<select
 					className='select select-bordered'
 					value={filters.status}
-					onChange={(e: React.ChangeEvent<HTMLSelectElement>) => handleFilterChange("status", e.target.value)}
+					onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+						handleFilterChange("status", e.target.value)
+					}
 				>
 					<option value=''>All Status</option>
 					<option value='TODO'>Todo</option>
@@ -85,26 +95,18 @@ export default function ProjectTasksPage({ params }: Props) {
 				<select
 					className='select select-bordered'
 					value={filters.assigneeId}
-					onChange={(e: React.ChangeEvent<HTMLSelectElement>) => handleFilterChange("assigneeId", e.target.value)}
+					onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+						handleFilterChange("assigneeId", e.target.value)
+					}
 				>
 					<option value=''>All Assignees</option>
-					<option value='1'>User 1</option>
-					<option value='2'>User 2</option>
+					{/* {tasks?.map(task => (
+						<option>{task?.}</option>
+					))} */}
 				</select>
-				{/* <select
-					className='select select-bordered'
-					value={filters.due}
-					onChange={e => handleFilterChange("due", e.target.value)}
-				>
-					<option value=''>All Due Dates</option>
-					<option value='overdue'>Overdue</option>
-					<option value='today'>Today</option>
-					<option value='week'>This week</option>
-				</select> */}
 			</div>
 
 			<KanbanBoard projectId={projectId} initialTasks={tasks} />
 		</div>
 	);
 }
-
