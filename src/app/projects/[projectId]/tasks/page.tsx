@@ -6,6 +6,8 @@ import { ITask, TaskPriority, TaskStatus } from "@/types/task.type";
 import { KanbanBoard } from "@/components/kanban-board";
 import toast from "react-hot-toast";
 import { ProjectsService } from "@/services/projects.service";
+import { capitalize } from "lodash";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 type FilterState = {
 	status: string;
@@ -27,6 +29,10 @@ export default function ProjectTasksPage({ params }: Props) {
 	const [assignees, setAssignees] = useState<{ id: number; name: string }[]>(
 		[]
 	);
+
+	const searchParams = useSearchParams();
+	const router = useRouter();
+	const pathname = usePathname();
 
 	useEffect(() => {
 		params.then(async ({ projectId }) => {
@@ -86,6 +92,15 @@ export default function ProjectTasksPage({ params }: Props) {
 		value: string
 	) => {
 		setFilters((prev: FilterState) => ({ ...prev, [key]: value }));
+		const params = new URLSearchParams(searchParams.toString());
+
+		if (value) {
+			params.set(key, value);
+		} else {
+			params.delete(key);
+		}
+
+		router.replace(`${pathname}?${params.toString()}`);
 	};
 
 	if (loading) {
@@ -95,6 +110,16 @@ export default function ProjectTasksPage({ params }: Props) {
 			</div>
 		);
 	}
+
+	const statusesArr = Array.from(new Set(tasks.map(task => task.status)));
+
+	const prioritiesArr = Array.from(new Set(tasks.map(task => task.priority)));
+
+	const filter = tasks.filter(task =>
+		prioritiesArr.some(pr => pr === task.priority)
+	);
+
+	const assigneesArr = Array.from(new Set(assignees.map(asgn => asgn.name)));
 
 	return (
 		<div className='space-y-6'>
@@ -117,10 +142,11 @@ export default function ProjectTasksPage({ params }: Props) {
 					onChange={(_e: any) => handleFilterChange("status", _e.target.value)}
 				>
 					<option value=''>All Status</option>
-					<option value='TODO'>Todo</option>
-					<option value='IN_PROGRESS'>In progress</option>
-					<option value='REVIEW'>Review</option>
-					<option value='DONE'>Done</option>
+					{statusesArr.map(status => (
+						<option key={status} value={status}>
+							{capitalize(status)}
+						</option>
+					))}
 				</select>
 				<select
 					className='select select-bordered'
@@ -129,11 +155,12 @@ export default function ProjectTasksPage({ params }: Props) {
 						handleFilterChange("priority", _e.target.value)
 					}
 				>
-					<option value=''>All Priority</option>
-					<option value='LOW'>Low</option>
-					<option value='MEDIUM'>Medium</option>
-					<option value='HIGH'>High</option>
-					<option value='URGENT'>Urgent</option>
+					<option value=''>All priorities</option>
+					{prioritiesArr.map(pr => (
+						<option key={pr} value={pr}>
+							{capitalize(pr)}
+						</option>
+					))}
 				</select>
 				<select
 					className='select select-bordered'
