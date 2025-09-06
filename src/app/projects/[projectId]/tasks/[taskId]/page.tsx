@@ -1,7 +1,14 @@
+import { TasksService } from "@/services/tasks.service";
+import { formatSnakeCase } from "@/lib/utils";
+
 type Props = { params: Promise<{ projectId: string; taskId: string }> };
 
 export default async function TaskDetailsPage({ params }: Props) {
 	const { projectId, taskId } = await params;
+
+	const taskResponse = await TasksService.getTask(projectId, taskId);
+	const task = taskResponse.data;
+
 	return (
 		<div className='space-y-6'>
 			<div className='flex items-center justify-between'>
@@ -15,7 +22,7 @@ export default async function TaskDetailsPage({ params }: Props) {
 					<div className='card-body'>
 						<h2 className='card-title'>Description</h2>
 						<p className='text-base-content/70'>
-							Task description goes here...
+							{task.description ?? "No description provided."}
 						</p>
 					</div>
 				</div>
@@ -23,21 +30,23 @@ export default async function TaskDetailsPage({ params }: Props) {
 					<div className='card-body'>
 						<h2 className='card-title'>Meta</h2>
 						<p>
-							<b>Assignee:</b> Jane Doe
+							<b>Assignee:</b> {task.assignee?.name ?? "Unassigned"}
 						</p>
 						<p>
-							<b>Due:</b> 2025-09-01
+							<b>Due:</b> {task.deadline ? new Date(task.deadline).toLocaleDateString() : "—"}
 						</p>
-						<div className='form-control'>
-							<label className='label'>
-								<span className='label-text'>Status</span>
-							</label>
-							<select className='select select-bordered'>
-								<option>Todo</option>
-								<option>In progress</option>
-								<option>Done</option>
-							</select>
-						</div>
+						<p>
+							<b>Status:</b>{" "}
+							<span className='badge badge-outline'>
+								{formatSnakeCase(task.status)}
+							</span>
+						</p>
+						<p>
+							<b>Priority:</b>{" "}
+							<span className='badge badge-ghost'>
+								{formatSnakeCase(task.priority)}
+							</span>
+						</p>
 					</div>
 				</div>
 			</div>
@@ -46,10 +55,10 @@ export default async function TaskDetailsPage({ params }: Props) {
 					<h2 className='card-title'>Change history</h2>
 					<ul className='menu'>
 						<li>
-							<a>2025-08-01 — Status changed to In progress</a>
+							<a>Created at: {new Date(task.createdAt).toLocaleString()}</a>
 						</li>
 						<li>
-							<a>2025-07-28 — Assignee updated to Jane</a>
+							<a>Updated at: {new Date(task.updatedAt).toLocaleString()}</a>
 						</li>
 					</ul>
 				</div>

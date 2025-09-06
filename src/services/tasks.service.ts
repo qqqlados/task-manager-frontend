@@ -6,7 +6,7 @@ import { IUser } from "@/types/user.type";
 
 export class TasksService {
 	static async getProjectTasks(
-		projectId: Pick<IProject, "id">,
+		projectId: number | string,
 		query: {
 			status?: TaskStatus;
 			priority?: TaskPriority;

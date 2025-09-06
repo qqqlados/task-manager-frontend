@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { TasksService } from "@/services/tasks.service";
-import { ITask, TaskStatus } from "@/types/task.type";
+import { ITask, TaskPriority, TaskStatus } from "@/types/task.type";
 import { KanbanBoard } from "@/components/kanban-board";
 import toast from "react-hot-toast";
 import { IProject } from "@/types/project.type";
@@ -13,7 +13,6 @@ export default function ProjectTasksPage({ params }: Props) {
 	const [projectId, setProjectId] = useState<string>("");
 	const [tasks, setTasks] = useState<ITask[]>([]);
 	const [loading, setLoading] = useState(true);
-	const [viewMode, setViewMode] = useState<"kanban" | "table">("kanban");
 	const [filters, setFilters] = useState({
 		status: "",
 		priority: "",
@@ -27,9 +26,14 @@ export default function ProjectTasksPage({ params }: Props) {
 		});
 	}, [params]);
 
-	const fetchTasks = async (projectId: Pick<IProject, "id">) => {
+	const fetchTasks = async (projectId: string) => {
 		try {
-			const response = await TasksService.getProjectTasks(projectId, filters);
+			const query = {
+				status: filters.status ? (filters.status as TaskStatus) : undefined,
+				priority: filters.priority ? (filters.priority as TaskPriority) : undefined,
+				assigneeId: filters.assigneeId ? Number(filters.assigneeId) : undefined,
+			};
+			const response = await TasksService.getProjectTasks(Number(projectId), query);
 			setTasks(response.data);
 		} catch (error) {
 			toast.error("Failed to fetch tasks");
@@ -38,7 +42,7 @@ export default function ProjectTasksPage({ params }: Props) {
 		}
 	};
 
-	const handleFilterChange = (key: string, value: string) => {
+	const handleFilterChange = (key: "status" | "priority" | "assigneeId", value: string) => {
 		const newFilters = { ...filters, [key]: value };
 		setFilters(newFilters);
 		fetchTasks(projectId);
@@ -57,20 +61,6 @@ export default function ProjectTasksPage({ params }: Props) {
 			<div className='flex items-center justify-between'>
 				<h1 className='text-2xl font-bold'>Tasks — Project #{projectId}</h1>
 				<div className='flex items-center gap-2'>
-					<div className='tabs tabs-boxed'>
-						<button
-							className={`tab ${viewMode === "kanban" ? "tab-active" : ""}`}
-							onClick={() => setViewMode("kanban")}
-						>
-							Kanban
-						</button>
-						<button
-							className={`tab ${viewMode === "table" ? "tab-active" : ""}`}
-							onClick={() => setViewMode("table")}
-						>
-							Table
-						</button>
-					</div>
 					<a
 						href={`/projects/${projectId}/tasks/new`}
 						className='btn btn-primary'
@@ -84,7 +74,7 @@ export default function ProjectTasksPage({ params }: Props) {
 				<select
 					className='select select-bordered'
 					value={filters.status}
-					onChange={e => handleFilterChange("status", e.target.value)}
+					onChange={(e: React.ChangeEvent<HTMLSelectElement>) => handleFilterChange("status", e.target.value)}
 				>
 					<option value=''>All Status</option>
 					<option value='TODO'>Todo</option>
@@ -95,7 +85,7 @@ export default function ProjectTasksPage({ params }: Props) {
 				<select
 					className='select select-bordered'
 					value={filters.assigneeId}
-					onChange={e => handleFilterChange("assigneeId", e.target.value)}
+					onChange={(e: React.ChangeEvent<HTMLSelectElement>) => handleFilterChange("assigneeId", e.target.value)}
 				>
 					<option value=''>All Assignees</option>
 					<option value='1'>User 1</option>
@@ -113,65 +103,7 @@ export default function ProjectTasksPage({ params }: Props) {
 				</select> */}
 			</div>
 
-			{viewMode === "kanban" ? (
-				<KanbanBoard projectId={projectId} initialTasks={tasks} />
-			) : (
-				<div className='overflow-x-auto border border-base-200 rounded-box'>
-					<table className='table'>
-						<thead>
-							<tr>
-								<th>Title</th>
-								<th>Assignee</th>
-								<th>Due</th>
-								<th>Status</th>
-								<th>Priority</th>
-								<th></th>
-							</tr>
-						</thead>
-						<tbody>
-							{tasks.map(task => (
-								<tr key={task.id}>
-									<td>
-										<a
-											href={`/projects/${projectId}/tasks/${task.id}`}
-											className='link link-hover'
-										>
-											{task.title}
-										</a>
-									</td>
-									<td>{task.assignee?.name || "Unassigned"}</td>
-									<td>
-										{task.deadline
-											? new Date(task.deadline).toLocaleDateString()
-											: "No deadline"}
-									</td>
-									<td>
-										<span className='badge badge-outline'>{task.status}</span>
-									</td>
-									<td>
-										<span className='badge badge-ghost'>{task.priority}</span>
-									</td>
-									<td>
-										<a
-											className='btn btn-ghost btn-sm'
-											href={`/projects/${projectId}/tasks/${task.id}`}
-										>
-											Open
-										</a>
-									</td>
-								</tr>
-							))}
-							{tasks.length === 0 && (
-								<tr>
-									<td colSpan={6} className='text-center text-base-content/60'>
-										No tasks found
-									</td>
-								</tr>
-							)}
-						</tbody>
-					</table>
-				</div>
-			)}
+			<KanbanBoard projectId={projectId} initialTasks={tasks} />
 		</div>
 	);
 }
