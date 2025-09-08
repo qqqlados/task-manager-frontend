@@ -20,51 +20,62 @@ export function Navigation() {
 	return (
 		<div className='relative z-50 h-14 flex items-center justify-center mb-5'>
 			<div className='navbar bg-base-100 rounded-box shadow-sm border border-base-200 w-full max-w-3xl'>
-				<div className='navbar-start'>
+				<div className='flex-1'>
 					<a className='btn btn-ghost text-lg font-semibold' href='/dashboard'>
-						Dashboard
-					</a>
-					<a className='btn btn-ghost' href='/projects'>
-						Projects
-					</a>
-					<a className='btn btn-ghost' href='/notifications'>
-						Notifications
-					</a>
-					<a className='btn btn-ghost' href='/analytics'>
-						Analytics
+						TaskManager
 					</a>
 				</div>
-				<div className='navbar-end'>
-					<div className='dropdown dropdown-end'>
-						<div tabIndex={0} role='button' className='btn btn-outline'>
-							Menu
-						</div>
-						<ul
-							tabIndex={0}
-							className='dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow'
-						>
-							<li>
-								<a href='/profile'>Profile</a>
-							</li>
-							<li>
-								<a onClick={() => showModal("create-project")}>
-									Create Project
-								</a>
-							</li>
-							<li>
-								<a href='/admin/users'>Admin Users</a>
-							</li>
-							<li>
-								<a href='/admin/projects'>Admin Projects</a>
-							</li>
-							<div className='divider'></div>
-							<li>
-								<a onClick={handleLogout} className='text-error'>
-									Logout
-								</a>
-							</li>
-						</ul>
-					</div>
+				<div className='flex-none'>
+					<ul className='menu menu-horizontal px-1'>
+						<li>
+							<a href='/dashboard'>Dashboard</a>
+						</li>
+						<li>
+							<details>
+								<summary>Projects</summary>
+								<ul className='p-2 bg-base-100 rounded-t-none'>
+									<li>
+										<a href='/projects'>All Projects</a>
+									</li>
+									<li>
+										<a onClick={() => showModal("create-project")}>Create Project</a>
+									</li>
+								</ul>
+							</details>
+						</li>
+						<li>
+							<a href='/notifications'>Notifications</a>
+						</li>
+						<li>
+							<details>
+								<summary>Admin</summary>
+								<ul className='p-2 bg-base-100 rounded-t-none'>
+									<li>
+										<a href='/admin/users'>Users</a>
+									</li>
+									<li>
+										<a href='/admin/projects'>Projects</a>
+									</li>
+								</ul>
+							</details>
+						</li>
+						<li>
+							<a href='/analytics'>Analytics</a>
+						</li>
+						<li>
+							<details>
+								<summary>Account</summary>
+								<ul className='p-2 bg-base-100 rounded-t-none'>
+									<li>
+										<a href='/profile'>Profile</a>
+									</li>
+									<li>
+										<a className='text-error' onClick={handleLogout}>Logout</a>
+									</li>
+								</ul>
+							</details>
+						</li>
+					</ul>
 				</div>
 			</div>
 		</div>
