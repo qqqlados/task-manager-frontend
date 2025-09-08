@@ -8,6 +8,7 @@ import toast from "react-hot-toast";
 import { ProjectsService } from "@/services/projects.service";
 import { capitalize } from "lodash";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { ProjectMembersService } from "@/services/project-members.service";
 
 type FilterState = {
 	status: string;
@@ -71,14 +72,13 @@ export default function ProjectTasksPage({ params }: Props) {
 
 	const fetchAssignees = async (projectId: string) => {
 		try {
-			const projectResponse = await ProjectsService.getProject(projectId);
+			const projectResponse = await ProjectMembersService.getMembers(projectId);
 
-			const members = projectResponse.data?.members ?? [];
-			console.log(projectResponse);
+			const members = projectResponse.data ?? [];
 			const mapped = members
 				.map(m => ({
-					id: m.user?.id ?? (m.userId as unknown as number),
-					name: m.user?.name ?? `User #${m.userId}`,
+					id: m?.id ?? (m.id as unknown as number),
+					name: m?.name ?? `User #${m.id}`,
 				}))
 				.filter(a => !!a.id && !!a.name);
 			setAssignees(mapped);
@@ -115,11 +115,19 @@ export default function ProjectTasksPage({ params }: Props) {
 
 	const prioritiesArr = Array.from(new Set(tasks.map(task => task.priority)));
 
-	const filter = tasks.filter(task =>
-		prioritiesArr.some(pr => pr === task.priority)
+	const shouldFilterAssigneesByRenderedTasks = Boolean(
+		searchParams.get("status") || searchParams.get("priority")
 	);
 
-	const assigneesArr = Array.from(new Set(assignees.map(asgn => asgn.name)));
+	const renderedAssigneeIdsSet = new Set(
+		tasks
+			.map(t => (t.assignedTo ?? t.assignee?.id) as number | undefined)
+			.filter((id): id is number => typeof id === "number")
+	);
+
+	const assigneesForSelect = shouldFilterAssigneesByRenderedTasks
+		? assignees.filter(a => renderedAssigneeIdsSet.has(a.id))
+		: assignees;
 
 	return (
 		<div className='space-y-6'>
@@ -141,7 +149,7 @@ export default function ProjectTasksPage({ params }: Props) {
 					value={filters.status}
 					onChange={(_e: any) => handleFilterChange("status", _e.target.value)}
 				>
-					<option value=''>All Status</option>
+					{statusesArr.length > 1 && <option value=''>All Status</option>}
 					{statusesArr.map(status => (
 						<option key={status} value={status}>
 							{capitalize(status)}
@@ -155,7 +163,7 @@ export default function ProjectTasksPage({ params }: Props) {
 						handleFilterChange("priority", _e.target.value)
 					}
 				>
-					<option value=''>All priorities</option>
+					{prioritiesArr.length > 1 && <option value=''>All Priorities</option>}
 					{prioritiesArr.map(pr => (
 						<option key={pr} value={pr}>
 							{capitalize(pr)}
@@ -169,8 +177,10 @@ export default function ProjectTasksPage({ params }: Props) {
 						handleFilterChange("assigneeId", _e.target.value)
 					}
 				>
-					<option value=''>All Assignees</option>
-					{assignees.map((a: { id: number; name: string }) => (
+					{assigneesForSelect.length > 1 && (
+						<option value=''>All Assignees</option>
+					)}
+					{assigneesForSelect.map((a: { id: number; name: string }) => (
 						<option key={a.id} value={a.id.toString()}>
 							{a.name}
 						</option>

@@ -45,14 +45,14 @@ export class TasksService {
 	}
 
 	static async updateTask(
-		projectId: Pick<IProject, "id">,
-		taskId: Pick<ITask, "id">,
+		projectId: string,
+		taskId: string,
 		payload: Partial<{
 			title: string;
 			description: string | null;
 			status: TaskStatus;
 			priority: TaskPriority;
-			deadline: string;
+			deadline: Date | null;
 			assignedTo: number;
 		}>
 	) {

@@ -12,31 +12,35 @@ export class UsersService {
 		return http<PaginatedResponse<IUser[]>>(url, { cache: "no-store" });
 	}
 
-	static async getUser(id: Pick<IUser, "id">) {
-		return http<ApiResponse<IUser>>(`/users/${id}`, { cache: "no-store" });
+	static async getUser(id?: number, email?: string) {
+		if (!id && !email) {
+			return;
+		}
+		const param = id || email;
+		return http<ApiResponse<IUser>>(`/users/${param}`, { cache: "no-store" });
 	}
 
-	static async updateUser(id: Pick<IUser, "id">, payload: Partial<IUser>) {
+	static async updateUser(id: string, payload: Partial<IUser>) {
 		return http<ApiResponse<IUser>>(`/users/${id}`, {
 			method: "PATCH",
 			body: payload,
 		});
 	}
 
-	static async changeRole(id: Pick<IUser, "id">, role: UserRole) {
+	static async changeRole(id: string, role: UserRole) {
 		return http<ApiResponse<IUser>>(`/users/${id}/role`, {
 			method: "PATCH",
 			body: { role },
 		});
 	}
 
-	static async blockUser(id: Pick<IUser, "id">) {
+	static async blockUser(id: string) {
 		return http<ApiResponse<void>>(`/users/${id}/deactivate`, {
 			method: "DELETE",
 		});
 	}
 
-	static async unblockUser(id: Pick<IUser, "id">) {
+	static async unblockUser(id: string) {
 		return http<ApiResponse<void>>(`/users/${id}/activate`, {
 			method: "PATCH",
 		});

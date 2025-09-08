@@ -1,5 +1,6 @@
 import { TasksService } from "@/services/tasks.service";
-import { formatSnakeCase } from "@/lib/utils";
+import { formatActionTaskStrings, formatSnakeCase } from "@/lib/utils";
+import { UsersService } from "@/services/users.service";
 
 type Props = { params: Promise<{ projectId: string; taskId: string }> };
 
@@ -8,6 +9,8 @@ export default async function TaskDetailsPage({ params }: Props) {
 
 	const taskResponse = await TasksService.getTask(projectId, taskId);
 	const task = taskResponse.data;
+
+	const historyStrings = formatActionTaskStrings(task.taskHistory ?? []);
 
 	return (
 		<div className='space-y-6'>
@@ -33,7 +36,10 @@ export default async function TaskDetailsPage({ params }: Props) {
 							<b>Assignee:</b> {task.assignee?.name ?? "Unassigned"}
 						</p>
 						<p>
-							<b>Due:</b> {task.deadline ? new Date(task.deadline).toLocaleDateString() : "—"}
+							<b>Due:</b>{" "}
+							{task.deadline
+								? new Date(task.deadline).toLocaleDateString()
+								: "—"}
 						</p>
 						<p>
 							<b>Status:</b>{" "}
@@ -54,16 +60,12 @@ export default async function TaskDetailsPage({ params }: Props) {
 				<div className='card-body'>
 					<h2 className='card-title'>Change history</h2>
 					<ul className='menu'>
-						<li>
-							<a>Created at: {new Date(task.createdAt).toLocaleString()}</a>
-						</li>
-						<li>
-							<a>Updated at: {new Date(task.updatedAt).toLocaleString()}</a>
-						</li>
+						{historyStrings.map((line, i) => (
+							<li key={i}>{line}</li>
+						))}
 					</ul>
 				</div>
 			</div>
 		</div>
 	);
 }
-

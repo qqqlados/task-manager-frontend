@@ -4,7 +4,7 @@ import { http } from "@/lib/utils";
 import { IUser } from "@/types/user.type";
 
 export class ProjectMembersService {
-	static async getMembers(projectId: Pick<IProject, "id">) {
+	static async getMembers(projectId: string) {
 		return http<PaginatedResponse<IProjectMember[]>>(
 			`/projects/${projectId}/members`,
 			{
@@ -14,8 +14,8 @@ export class ProjectMembersService {
 	}
 
 	static async addMember(
-		projectId: Pick<IProject, "id">,
-		payload: { userId: Pick<IUser, "id">; role?: string }
+		projectId: string,
+		payload: { userId: string; role?: string }
 	) {
 		return http<ApiResponse<IProjectMember>>(`/projects/${projectId}/members`, {
 			method: "POST",
@@ -23,10 +23,7 @@ export class ProjectMembersService {
 		});
 	}
 
-	static async removeMember(
-		projectId: Pick<IProject, "id">,
-		userId: Pick<IUser, "id">
-	) {
+	static async removeMember(projectId: string, userId: string) {
 		return http<ApiResponse<null>>(`/projects/${projectId}/members/${userId}`, {
 			method: "DELETE",
 		});
