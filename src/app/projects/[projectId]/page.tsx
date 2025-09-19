@@ -26,9 +26,34 @@ export default async function ProjectDetailsPage({ params }: Props) {
 				<h1 className='text-2xl font-bold'>Project #{projectId}</h1>
 				<div className='flex gap-2'>
 					<a href={`/projects/${projectId}/edit`} className='btn'>
-						Edit
+						<svg
+							xmlns='http://www.w3.org/2000/svg'
+							viewBox='0 0 24 24'
+							fill='currentColor'
+							className='size-4'
+						>
+							<path d='M21.731 2.269a2.625 2.625 0 0 0-3.712 0l-1.157 1.157 3.712 3.712 1.157-1.157a2.625 2.625 0 0 0 0-3.712Z' />
+							<path d='M19.513 8.199l-3.712-3.712-12.15 12.15a5.25 5.25 0 0 0-1.32 2.214l-.8 2.685a.75.75 0 0 0 .933.933l2.685-.8a5.25 5.25 0 0 0 2.214-1.32L19.513 8.2Z' />
+						</svg>
+						<span>Edit</span>
 					</a>
-					<button className='btn btn-error'>Delete</button>
+					<button className='btn btn-error'>
+						<svg
+							xmlns='http://www.w3.org/2000/svg'
+							fill='none'
+							viewBox='0 0 24 24'
+							strokeWidth='1.5'
+							stroke='currentColor'
+							className='size-4'
+						>
+							<path
+								strokeLinecap='round'
+								strokeLinejoin='round'
+								d='M6 18L18 6M6 6l12 12'
+							/>
+						</svg>
+						<span>Delete</span>
+					</button>
 				</div>
 			</div>
 
@@ -41,38 +66,18 @@ export default async function ProjectDetailsPage({ params }: Props) {
 						</p>
 					</div>
 				</div>
+
 				<div className='card bg-base-100 shadow border border-base-200'>
 					<div className='card-body'>
-						<h2 className='card-title'>Meta</h2>
-						<p>
-							<b>Deadline:</b>{" "}
-							{project.deadline
-								? new Date(project.deadline).toLocaleDateString()
-								: "—"}
-						</p>
-						<p>
-							<b>Status:</b>{" "}
-							<span className='badge badge-outline'>
-								{formatSnakeCase(project.status)}
-							</span>
-						</p>
-						<p>
-							<b>Members:</b> {project.members ? project.members.length : 0}
-						</p>
-					</div>
-				</div>
-			</div>
-
-			<div className='card bg-base-100 shadow border border-base-200'>
-				<div className='card-body'>
-					<h2 className='card-title'>Task Progress</h2>
-					<progress
-						className='progress progress-primary w-full'
-						value={progress}
-						max='100'
-					></progress>
-					<div className='text-sm text-base-content/60 mt-2'>
-						{doneTasks} of {totalTasks} tasks done ({progress}%)
+						<h2 className='card-title'>Task Progress</h2>
+						<progress
+							className='progress progress-primary w-full'
+							value={progress}
+							max='100'
+						></progress>
+						<div className='text-sm text-base-content/60 mt-2'>
+							{doneTasks} of {totalTasks} tasks done ({progress}%)
+						</div>
 					</div>
 				</div>
 			</div>
@@ -85,7 +90,7 @@ export default async function ProjectDetailsPage({ params }: Props) {
 							className='btn btn-primary btn-sm'
 							href={`/projects/${projectId}/tasks`}
 						>
-							View all tasks
+							<span>View board</span>
 						</a>
 					</div>
 					<div className='overflow-x-auto'>

@@ -26,6 +26,7 @@ export class TasksService {
 	static async getTask(projectId: number | string, taskId: number | string) {
 		return http<ApiResponse<ITask>>(`/projects/${projectId}/tasks/${taskId}`, {
 			cache: "no-store",
+			tags: [`task-${taskId}`],
 		});
 	}
 

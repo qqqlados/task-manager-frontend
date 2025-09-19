@@ -1,25 +1,34 @@
-import { ApiResponse, PaginatedResponse } from "@/types/dto";
+import { ApiResponse } from "@/types/dto";
 import { IComment } from "@/types/comment.type";
 import { http } from "@/lib/utils";
-import { ITask } from "@/types/task.type";
 
 export class CommentsService {
 	static async addComment(
-		taskId: Pick<ITask, "id">,
+		projectId: string,
+		taskId: string,
 		payload: { content: string }
 	) {
-		return http<ApiResponse<IComment>>(`/tasks/${taskId}/comments`, {
-			method: "POST",
-			body: payload,
-		});
+		http<ApiResponse<IComment>>(
+			`/projects/${projectId}/tasks/${taskId}/comments`,
+			{
+				method: "POST",
+				body: payload,
+			}
+		);
+
+		return;
 	}
 
 	static async deleteComment(
-		taskId: Pick<ITask, "id">,
-		commentId: Pick<IComment, "id">
+		projectId: string,
+		taskId: string,
+		commentId: string
 	) {
-		return http<ApiResponse<null>>(`/tasks/${taskId}/comments/${commentId}`, {
-			method: "DELETE",
-		});
+		return http<ApiResponse<null>>(
+			`/projects/${projectId}/tasks/${taskId}/comments/${commentId}`,
+			{
+				method: "DELETE",
+			}
+		);
 	}
 }

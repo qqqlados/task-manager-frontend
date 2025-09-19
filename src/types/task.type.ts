@@ -1,3 +1,5 @@
+import { IComment } from "./comment.type";
+import { INotification } from "./notification.type";
 import { IProject } from "./project.type";
 import { IUser } from "./user.type";
 
@@ -58,15 +60,15 @@ export interface ITask {
 	deadline?: Date | null;
 	createdAt: Date;
 	updatedAt: Date;
-	projectId: Pick<IProject, "id">;
+	projectId: number;
 	createdBy: number;
 	assignedTo?: number | null;
 
 	project?: IProject;
 	creator?: IUser;
 	assignee?: IUser | null;
-	comments?: Comment[];
-	notifications?: Notification[];
+	comments?: IComment[];
+	notifications?: INotification[];
 	taskHistory?: ITaskHistory[];
 }
 
