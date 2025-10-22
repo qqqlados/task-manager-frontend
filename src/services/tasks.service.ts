@@ -5,100 +5,100 @@ import { IProject } from "@/types/project.type";
 import { IUser } from "@/types/user.type";
 
 export class TasksService {
-	static async getProjectTasks(
-		projectId: number | string,
-		query: {
-			status?: TaskStatus;
-			priority?: TaskPriority;
-			assigneeId?: number;
-		} = {}
-	) {
-		const params = new URLSearchParams();
-		Object.entries(query).forEach(([key, value]) => {
-			if (value !== undefined && value !== null) params.set(key, String(value));
-		});
-		const url = params.toString()
-			? `/projects/${projectId}/tasks?${params.toString()}`
-			: `/projects/${projectId}/tasks`;
-		return http<PaginatedResponse<ITask[]>>(url, { cache: "no-store" });
-	}
+  static async getProjectTasks(
+    projectId: number | string,
+    query: {
+      status?: TaskStatus;
+      priority?: TaskPriority;
+      assigneeId?: number;
+    } = {}
+  ) {
+    const params = new URLSearchParams();
+    Object.entries(query).forEach(([key, value]) => {
+      if (value !== undefined && value !== null) params.set(key, String(value));
+    });
+    const url = params.toString()
+      ? `/projects/${projectId}/tasks?${params.toString()}`
+      : `/projects/${projectId}/tasks`;
+    return http<PaginatedResponse<ITask[]>>(url, { cache: "no-store" });
+  }
 
-	static async getTask(projectId: number | string, taskId: number | string) {
-		return http<ApiResponse<ITask>>(`/projects/${projectId}/tasks/${taskId}`, {
-			cache: "no-store",
-			tags: [`task-${taskId}`],
-		});
-	}
+  static async getTask(projectId: number | string, taskId: number | string) {
+    return http<ApiResponse<ITask>>(`/projects/${projectId}/tasks/${taskId}`, {
+      cache: "no-store",
+      tags: [`task-${taskId}`],
+    });
+  }
 
-	static async createTask(
-		projectId: Pick<IProject, "id">,
-		payload: {
-			title: string;
-			description?: string | null;
-			priority?: TaskPriority;
-			assignedTo?: number;
-		}
-	) {
-		return http<ApiResponse<ITask>>(`/projects/${projectId}/tasks`, {
-			method: "POST",
-			body: payload,
-		});
-	}
+  static async createTask(
+    projectId: Pick<IProject, "id">,
+    payload: {
+      title: string;
+      description?: string | null;
+      priority?: TaskPriority;
+      assignedTo?: number;
+    }
+  ) {
+    return http<ApiResponse<ITask>>(`/projects/${projectId}/tasks`, {
+      method: "POST",
+      body: payload,
+    });
+  }
 
-	static async updateTask(
-		projectId: string,
-		taskId: string,
-		payload: Partial<{
-			title: string;
-			description: string | null;
-			status: TaskStatus;
-			priority: TaskPriority;
-			deadline: Date | null;
-			assignedTo: number;
-		}>
-	) {
-		return http<ApiResponse<ITask>>(`/projects/${projectId}/tasks/${taskId}`, {
-			method: "PUT",
-			body: payload,
-		});
-	}
+  static async updateTask(
+    projectId: string,
+    taskId: string,
+    payload: Partial<{
+      title: string;
+      description: string | null;
+      status: TaskStatus;
+      priority: TaskPriority;
+      deadline: Date | null;
+      assignedTo: number;
+    }>
+  ) {
+    return http<ApiResponse<ITask>>(`/projects/${projectId}/tasks/${taskId}`, {
+      method: "PUT",
+      body: payload,
+    });
+  }
 
-	static async deleteTask(
-		projectId: Pick<IProject, "id">,
-		taskId: Pick<ITask, "id">,
-		userId: Pick<IUser, "id">
-	) {
-		return http<ApiResponse<null>>(`/projects/${projectId}/tasks/${taskId}`, {
-			method: "DELETE",
-		});
-	}
+  static async deleteTask(
+    projectId: Pick<IProject, "id">,
+    taskId: Pick<ITask, "id">,
+    userId: Pick<IUser, "id">
+  ) {
+    return http<ApiResponse<null>>(`/projects/${projectId}/tasks/${taskId}`, {
+      method: "DELETE",
+    });
+  }
 
-	static async changeStatus({
-		projectId,
-		taskId,
-		newStatus,
-	}: {
-		projectId: string;
-		taskId: string;
-		newStatus: TaskStatus;
-	}) {
-		return http<ApiResponse<{ message: string }>>(
-			`/projects/${projectId}/tasks/${taskId}/change-status`,
-			{
-				method: "PATCH",
-				body: { newStatus },
-			}
-		);
-	}
+  static async changeStatus({
+    projectId,
+    taskId,
+    newStatus,
+  }: {
+    projectId: string;
+    taskId: string;
+    newStatus: TaskStatus;
+  }) {
+    return http<ApiResponse<{ message: string }>>(
+      `/projects/${projectId}/tasks/${taskId}/change-status`,
+      {
+        method: "PATCH",
+        body: { status: newStatus as TaskStatus },
+      }
+    );
+  }
 
-	static async assignTask(
-		projectId: Pick<IProject, "id">,
-		taskId: Pick<ITask, "id">,
-		assigneeId: number
-	) {
-		return http<ApiResponse<ITask>>(
-			`/projects/${projectId}/tasks/${taskId}/assignee`,
-			{ method: "PUT", body: { assigneeId } }
-		);
-	}
+  static async assignTask(
+    projectId: Pick<IProject, "id">,
+    taskId: Pick<ITask, "id">,
+    assigneeId: number
+  ) {
+    return http<ApiResponse<ITask>>(
+      `/projects/${projectId}/tasks/${taskId}/assignee`,
+      { method: "PUT", body: { assigneeId } }
+    );
+  }
 }
