@@ -1,27 +1,21 @@
-import { ProjectsService } from "@/services/projects.service";
-import { PaginationComponent } from "./pagination";
-import { formatSnakeCase } from "@/lib/utils";
-import Link from "next/link";
-import {
-  CheckCircle,
-  Clock,
-  Circle,
-  XCircle,
-  User,
-  FolderOpen,
-} from "lucide-react";
+import { ProjectsService } from '@/services/projects.service';
+import { PaginationComponent } from './pagination';
+import { formatSnakeCase } from '@/lib/utils';
+import Link from 'next/link';
+import { CheckCircle, Clock, Circle, XCircle, User, FolderOpen } from 'lucide-react';
+import { getCookies } from '@/lib/cookies';
 
 const getStatusIcon = (status: string) => {
   switch (status?.toUpperCase()) {
-    case "ACTIVE":
+    case 'ACTIVE':
       return <Circle className="w-4 h-4 text-green-600" />;
-    case "COMPLETED":
+    case 'COMPLETED':
       return <CheckCircle className="w-4 h-4 text-gray-600" />;
-    case "IN_PROGRESS":
+    case 'IN_PROGRESS':
       return <Clock className="w-4 h-4 text-blue-600" />;
-    case "PENDING":
+    case 'PENDING':
       return <Clock className="w-4 h-4 text-yellow-600" />;
-    case "CANCELLED":
+    case 'CANCELLED':
       return <XCircle className="w-4 h-4 text-red-600" />;
     default:
       return <FolderOpen className="w-4 h-4 text-gray-500" />;
@@ -30,11 +24,7 @@ const getStatusIcon = (status: string) => {
 
 const getUserIcon = () => <User className="w-4 h-4 text-gray-600" />;
 
-export const ProjectsList = async ({
-  searchParams,
-}: {
-  searchParams: { name?: string; status?: string; page?: number };
-}) => {
+export const ProjectsList = async ({ searchParams }: { searchParams: { name?: string; status?: string; page?: number } }) => {
   const { name, status, page } = await searchParams;
   const query = {
     name,
@@ -45,7 +35,8 @@ export const ProjectsList = async ({
   const paginatedProjects = await ProjectsService.getProjects(query);
   const projects = paginatedProjects.data;
 
-  console.log(projects);
+  const currentUser = await getCookies('user');
+
   return (
     <>
       <div className="flex flex-col justify-between gap-5 flex-1 h-full">
@@ -69,38 +60,25 @@ export const ProjectsList = async ({
                             <img src={project?.image} alt="Project logo" />
                           </div>
                         </div>
-                        <Link
-                          href={`projects/${project.id}`}
-                          className="hover:underline"
-                        >
+                        <Link href={`projects/${project.id}`} className="hover:underline">
                           <div className="font-semibold">{project?.name}</div>
-                          <div className="text-sm text-base-content/60">
-                            {formatSnakeCase(project?.type)}
-                          </div>
+                          <div className="text-sm text-base-content/60">{formatSnakeCase(project?.type)}</div>
                         </Link>
                       </td>
                       <td>
-                        <div className="flex items-center gap-2">
-                          <span className="text-lg">
-                            {getStatusIcon(project?.status)}
-                          </span>
-                          <span className="badge badge-ghost uppercase text-xs px-2 py-1">
-                            {project?.status}
-                          </span>
+                        <div className="flex items-center">
+                          <span className="text-lg">{getStatusIcon(project?.status)}</span>
+                          <span className="badge badge-ghost uppercase text-xs px-2 py-1">{project?.status}</span>
                         </div>
                       </td>
                       <td>
                         {project?.lead?.name ? (
-                          <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-1">
                             <span className="text-sm">{getUserIcon()}</span>
-                            <span className="badge badge-outline text-xs">
-                              {project.lead.name}
-                            </span>
+                            <span className="badge badge-outline text-xs">{JSON.parse(currentUser!).name === project.lead.name ? 'Me' : project.lead.name}</span>
                           </div>
                         ) : (
-                          <span className="text-base-content/40 text-xs">
-                            Not assigned
-                          </span>
+                          <span className="text-base-content/40 text-xs">Not assigned</span>
                         )}
                       </td>
                     </tr>
@@ -109,17 +87,12 @@ export const ProjectsList = async ({
               </table>
             </div>
           ) : (
-            <div className="p-6 text-center text-base-content/60">
-              No projects found
-            </div>
+            <div className="p-6 text-center text-base-content/60">No projects found</div>
           )}
         </div>
       </div>
 
-      <PaginationComponent
-        page={page ?? 1}
-        totalPages={paginatedProjects.pagination.totalPages}
-      />
+      <PaginationComponent page={page ?? 1} totalPages={paginatedProjects.pagination.totalPages} />
     </>
   );
 };

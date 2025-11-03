@@ -1,13 +1,9 @@
-import { ProjectsList } from "@/components/projects-list";
-import { ProjectsSidebar } from "@/components/projects-sidebar";
-import { SearchInput } from "@/components/search-input";
-import { FC, Suspense } from "react";
+import { ProjectsList } from '@/components/projects-list';
+import { ProjectsSidebar } from '@/components/projects-sidebar';
+import { SearchInput } from '@/components/search-input';
+import { FC, Suspense } from 'react';
 
-const ProjectsPage = async ({
-  searchParams,
-}: {
-  searchParams: { name?: string; status?: string; page?: number };
-}) => {
+const ProjectsPage = async ({ searchParams }: { searchParams: { name?: string; status?: string; page?: number } }) => {
   const { name, status, page } = await searchParams;
 
   return (
@@ -29,13 +25,7 @@ const ProjectsPage = async ({
         </div>
 
         <div className="flex-shrink-0">
-          <Suspense
-            fallback={
-              <div className="flex items-center justify-center h-64">
-                <span className="loading loading-spinner loading-lg"></span>
-              </div>
-            }
-          >
+          <Suspense>
             <ProjectsSidebar searchParams={searchParams} />
           </Suspense>
         </div>

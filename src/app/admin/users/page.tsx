@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
-import { UsersService } from "@/services/users.service";
-import { IUser, UserRole } from "@/types/user.type";
-import { Select } from "@/components/select";
-import toast from "react-hot-toast";
+import { useEffect, useState } from 'react';
+import { UsersService } from '@/services/users.service';
+import { IUser, UserRole } from '@/types/user.type';
+import { Select } from '@/components/select';
+import toast from 'react-hot-toast';
 
 export default function AdminUsersPage() {
   const [users, setUsers] = useState<IUser[]>([]);
@@ -19,7 +19,7 @@ export default function AdminUsersPage() {
       const response = await UsersService.getUsers({ page: 1 });
       setUsers(response.data);
     } catch (error) {
-      toast.error("Failed to fetch users");
+      toast.error('Failed to fetch users');
     } finally {
       setLoading(false);
     }
@@ -28,30 +28,30 @@ export default function AdminUsersPage() {
   const handleRoleChange = async (userId: number, newRole: UserRole) => {
     try {
       await UsersService.changeRole(userId.toString(), newRole);
-      toast.success("User role updated");
+      toast.success('User role updated');
       fetchUsers();
     } catch (error) {
-      toast.error("Failed to update user role");
+      toast.error('Failed to update user role');
     }
   };
 
   const handleBlockUser = async (userId: number) => {
     try {
       await UsersService.blockUser(userId.toString());
-      toast.success("User blocked");
+      toast.success('User blocked');
       fetchUsers();
     } catch (error) {
-      toast.error("Failed to block user");
+      toast.error('Failed to block user');
     }
   };
 
   const handleUnblockUser = async (userId: number) => {
     try {
       await UsersService.unblockUser(userId.toString());
-      toast.success("User unblocked");
+      toast.success('User unblocked');
       fetchUsers();
     } catch (error) {
-      toast.error("Failed to unblock user");
+      toast.error('Failed to unblock user');
     }
   };
 
@@ -84,14 +84,11 @@ export default function AdminUsersPage() {
                   <div className="flex items-center gap-3">
                     <div className="avatar placeholder">
                       <div className="bg-neutral text-neutral-content rounded-full w-8 h-8 flex items-center justify-center">
-                        <span className="text-xs font-medium leading-none">
-                          {user.name?.charAt(0).toUpperCase() ||
-                            user.email.charAt(0).toUpperCase()}
-                        </span>
+                        <span className="text-xs font-medium leading-none">{user.name?.charAt(0).toUpperCase() || user.email.charAt(0).toUpperCase()}</span>
                       </div>
                     </div>
                     <div>
-                      <div className="font-bold">{user.name || "No name"}</div>
+                      <div className="font-bold">{user.name || 'No name'}</div>
                       <div className="text-sm opacity-50">ID: {user.id}</div>
                     </div>
                   </div>
@@ -99,37 +96,23 @@ export default function AdminUsersPage() {
                 <td>{user.email}</td>
                 <td>
                   <Select
-                    options={["USER", "ADMIN"]}
+                    options={['USER', 'ADMIN']}
                     label="Select role"
                     value={user.role}
-                    onChange={(newRole) =>
-                      handleRoleChange(user.id, newRole as UserRole)
-                    }
+                    onChange={(newRole) => handleRoleChange(user.id, newRole as UserRole)}
                     widthClassName="w-26"
                   />
                 </td>
                 <td>
-                  <span
-                    className={`badge px-2 py-1 ${
-                      user.isActive ? "badge-success" : "badge-error"
-                    }`}
-                  >
-                    {user.isActive ? "Active" : "Blocked"}
-                  </span>
+                  <span className={`badge px-2 py-1 w-[73px] ${user.isActive ? 'badge-success' : 'badge-error'}`}>{user.isActive ? 'Active' : 'Blocked'}</span>
                 </td>
                 <td>
                   {user.isActive ? (
-                    <button
-                      className="btn btn-error btn-sm"
-                      onClick={() => handleBlockUser(user.id)}
-                    >
+                    <button className="btn btn-error btn-sm w-[82px]" onClick={() => handleBlockUser(user.id)}>
                       Block
                     </button>
                   ) : (
-                    <button
-                      className="btn btn-success btn-sm"
-                      onClick={() => handleUnblockUser(user.id)}
-                    >
+                    <button className="btn btn-success btn-sm" onClick={() => handleUnblockUser(user.id)}>
                       Unblock
                     </button>
                   )}
